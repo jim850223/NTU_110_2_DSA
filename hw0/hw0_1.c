@@ -1,6 +1,7 @@
 #include<stdio.h>
 #include<stdlib.h>
 #include<string.h>
+#include <stdbool.h>
 
 /*int main(void)
 {
@@ -35,8 +36,9 @@
 }  
 */
 
-
-void strToInt(char*, int, int*);
+int comparator(int *, int *);
+int *strToInt(char *);
+void print_the_number(int *);
 /*
 void strToInt(char toDo[], int arr_len, int result[])
 
@@ -48,30 +50,47 @@ szince char is different to char array, you should type char* instead of char in
 
 
 int main(void){
-    char num1[512];
-    char num2[512];
+    char num1[256];
+    char num2[256];
     printf("Please type in number 1\n");
     scanf("%s", num1);
-    //int len = (int)sizeof(trans_num) / sizeof(trans_num[0]);
-    int len1 = strlen(num1);
-    //get the length of the input
     printf("Please type in numebr 2\n");
     scanf("%s", num2);
-    int len2 = strlen(num2);
-
-    int num1_transform[len1];
-    strToInt(num1, len1, num1_transform);  
-    //trnsform the string to integer array
-    int num2_transform[len2];
-    strToInt(num2, len2, num2_transform); 
-        
-    for (int i = 0; i < len1; i++){
-        printf("%d", num1_transform[i]);
-    }
-    printf("\n");
     
+    int *num1_transform = strToInt(num1);  
+    int *num2_transform = strToInt(num2);  
+        
+    //print_the_number(num1_transform);
+    printf("%d\n", comparator(num1_transform, num2_transform));
 }
 
+int comparator(int *num1, int *num2)
+//not finished yet, you can only compare the length
+{
+    if (num1[0] > num2[0])
+        return true;
+    else{
+        if (num1[0] < num2[0])
+            return false;
+        else{
+            //compare every number of them
+            for (int i = num1[0]; i > 0; i--){
+                if (num1[i] > num2[i]){
+                    return true;
+                }
+                else if (num1[i] < num2[i]){
+                    return false;
+                }
+            }
+            return 2;
+            //return 2 if they are equl
+        }    
+    }
+}
+
+//substractor
+//divisor
+//multiplier
 
 
 /* void strToInt(char toDo[], int arr_len, int result[]){
@@ -84,9 +103,22 @@ int main(void){
 } */
 
 //make the above function in an oppsite direction
-void strToInt(char toDo[], int arr_len, int result[]){
+int *strToInt(char toDo[])
+{
+    int arr_len = strlen(toDo);
+    //store the length of the long integer in the first element of the array
+    int * result = (int *) malloc((arr_len + 1) * sizeof(int));
+    result[0] = arr_len;
     for (int i = 0; i < arr_len; i++){
-        result[arr_len -1 - i] = (int)(toDo[i] - '0');    
-    //you have to delete 1 to make the position correct
+        result[arr_len - i] = (int)(toDo[i] - '0');
     }
+    return result;
+}
+
+void print_the_number(int toDo[])
+{   
+    int num_len = toDo[0];
+    for (int i = 0; i < num_len; i++)
+        printf("%d", toDo[num_len - i]);
+    printf("\n");
 }
