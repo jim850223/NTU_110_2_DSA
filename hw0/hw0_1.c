@@ -39,6 +39,7 @@
 int comparator(int *, int *);
 int *strToInt(char *);
 void print_the_number(int *);
+void swap(int **, int **);
 /*
 void strToInt(char toDo[], int arr_len, int result[])
 
@@ -87,6 +88,14 @@ int comparator(int *num1, int *num2)
         }    
     }
 }
+
+void swap(int **num1, int **num2)
+{
+    int **tmp = num1;
+    num1 = num2;
+    num2 = tmp;
+}
+
 
 //substractor
 //divisor
