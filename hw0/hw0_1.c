@@ -12,6 +12,7 @@ void swap(int **, int **);
 void substractor(int **num1, int **num2);
 char *get_num_in_str();
 void divisor(int **);
+void adder_to_itself(int **num1, int **num2);
 /*
 void strToInt(char toDo[], int arr_len, int result[])
 
@@ -26,14 +27,20 @@ int main(void){
     
     char *num1 = get_num_in_str();    
     char *num2 = get_num_in_str();    
-    
     int *num1_transform = strToInt(num1);
-    int *num2_transform = strToInt(num2);      
+    int *num2_transform = strToInt(num2);
+    adder_to_itself(&num1_transform, &num2_transform);
+    print_the_number(num1_transform);
+    
+    int ans = 1;
+    int tmp;
+    while (num1_transform[0] != 0 && num2_transform[0] != 0) {
+        
+    }
 
     printf("%d\n", comparator(num1_transform, num2_transform));
     substractor(&num1_transform, &num2_transform);
-    
-    
+        
 }
 
 
@@ -43,7 +50,6 @@ void swap(int **num1, int **num2)
     num1 = num2;
     num2 = tmp;
 }
-
 
 void substractor(int **num1, int **num2)
 {
@@ -98,7 +104,6 @@ int comparator(int *num1, int *num2)
     }
 }
 
-
 void divisor(int **num) {
     int num_length = num[0][0];
     for (int i = num_length; i > 0; i-- ) {
@@ -116,22 +121,35 @@ void divisor(int **num) {
     }
 }
 
-//multiplier
+void multiplier() {
 
+}
 
+void adder_to_itself(int **num1, int **num2) {
+    int long_length = (num1[0][0] >= num2[0][0]) ? num1[0][0] : num2[0][0];
+    
+    //to check if the final result is longer than long_length
+    
+    for (int i = 1; i <= long_length; i++) {
+        if ((num1[0][i] + num2[0][i]) >= 10) {            
+            num1[0][i+1] = num1[0][i+1] + 1;
+            //it's add 1 but not 10, bad mistake
 
-
-
-/* void strToInt(char toDo[], int arr_len, int result[]){
-    //int result[arr_len];
-    for (int i = 0; i < arr_len; i++){
-        result[i] = (int)(toDo[i] - '0');
-        //printf("%d", result[i]);
-    //the problem is that it will save til the end of the string
+            num1[0][i] = (num1[0][i] + num2[0][i]) % 10;
+    
+        }
+        else {
+            num1[0][i] = num1[0][i] + num2[0][i];
+        }
     }
-} */
+    if (num1[0][long_length+1]) {
+        num1[0][0] = long_length + 1;
+    }
+    else {
+        num1[0][0] = long_length;
+    }
+}
 
-//make the above function in an oppsite direction
 int *strToInt(char toDo[])
 {
     int arr_len = strlen(toDo);
