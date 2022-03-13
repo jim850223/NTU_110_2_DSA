@@ -13,6 +13,7 @@ void substractor(int **num1, int **num2);
 char *get_num_in_str();
 void divisor(int **);
 void adder_to_itself(int **num1, int **num2);
+int *one_digit_multiplier(int *, int);
 /*
 void strToInt(char toDo[], int arr_len, int result[])
 
@@ -29,6 +30,10 @@ int main(void){
     char *num2 = get_num_in_str();    
     int *num1_transform = strToInt(num1);
     int *num2_transform = strToInt(num2);
+
+    int *tmp_1 = one_digit_multiplier(num1_transform, 3);
+    print_the_number(tmp_1);
+
     adder_to_itself(&num1_transform, &num2_transform);
     print_the_number(num1_transform);
     
@@ -121,9 +126,6 @@ void divisor(int **num) {
     }
 }
 
-void multiplier() {
-
-}
 
 void adder_to_itself(int **num1, int **num2) {
     int long_length = (num1[0][0] >= num2[0][0]) ? num1[0][0] : num2[0][0];
@@ -149,6 +151,39 @@ void adder_to_itself(int **num1, int **num2) {
         num1[0][0] = long_length;
     }
 }
+
+int *one_digit_multiplier(int *multiplier, int multiplicand) {
+    
+    int *result = (int *) malloc((multiplier[0] + 2) * sizeof(int));
+    
+    //to check if the length of the result is more than multipler's
+    int over = 0;
+    int tmp = 0;
+    for (int i = 1; i <= multiplier[0]; i++) {
+        tmp = multiplier[i] * multiplicand;
+        if (tmp >= 10) {
+            result[i+1] = tmp / 10;
+            result[i] += tmp % 10;
+            over = 1;
+        }
+        else {
+            result[i] += tmp;
+            over = 0;
+        }
+    }
+        
+    result[0] = multiplier[0];
+    if (over == 1) {
+        result[0] += 1;
+    }
+    return result;
+}
+
+
+void multiplier(int **num1, int time) {  
+
+}
+
 
 int *strToInt(char toDo[])
 {
