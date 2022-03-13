@@ -4,7 +4,6 @@
 #include <stdbool.h>
 #define MAX_LENGTH 256
 
-
 int comparator(int *, int *);
 void print_the_number(int *);
 void swap(int **, int **);
@@ -29,23 +28,33 @@ int main(void){
     char *num2 = get_num_in_str();    
     int *num1_transform = strToInt(num1);
     int *num2_transform = strToInt(num2);
+                    
+    int *ans = (int *) malloc((MAX_LENGTH + 1) * sizeof(int));
     
-    self_multiplier(&num1_transform, &num2_transform);
-    print_the_number(num1_transform);
-    
+    int *two = (int *) malloc((MAX_LENGTH + 1) * sizeof(int));
+    two[0] = 1;
+    two[1] = 2;
 
-    //adder_to_itself_with_digit_control(&num1_transform, &num2_transform, 5);
-    
-    
-/*     int ans = 1;
-    int tmp;
     while (num1_transform[0] != 0 && num2_transform[0] != 0) {
-        
+        if ((num1_transform[1]%2 == 0) && (num2_transform[1]%2 == 0)) {
+            self_multiplier(&num1_transform, &two);
+            divisor(&num1_transform);
+            divisor(&num2_transform);
+        }
+        else if (num1_transform[1]%2 == 0){
+            divisor(&num1_transform);
+        }
+        else if (num2_transform[1]%2 == 0){
+            divisor(&num2_transform);
+        }
+        if (comparator(num1_transform, num2_transform) == 1) {
+            swap(&num1_transform, &num2_transform);
+        }
+        substractor(&num1_transform, &num2_transform);
+        //printf("calculating!!\n");
     }
-
-    printf("%d\n", comparator(num1_transform, num2_transform));
-    substractor(&num1_transform, &num2_transform); */
-        
+    self_multiplier(&num1_transform, &ans);    
+    print_the_number(num1_transform);
 }
 
 
