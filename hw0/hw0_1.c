@@ -15,29 +15,48 @@ int *one_digit_multiplier(int *, int);
 void self_multiplier(int **num1, int **num2);
 
 /*
-void strToInt(char toDo[], int arr_len, int result[])
+void strToInt(char toDo[])
 both of the ways are allowed, check out the difference
 you can whether put the arguments name or not
 szince char is different to char array, you should type char* instead of char in the first fashion
 */
+
 int *strToInt(char *);
 
-int main(void){
+//int main(int argc, char *argv[]) {
+int main() {
+    //char *num1 = get_num_in_str();    
+    //char *num2 = get_num_in_str();    
     
-    char *num1 = get_num_in_str();    
-    char *num2 = get_num_in_str();    
+    char * num1 = (char *) malloc((MAX_LENGTH + 1) * sizeof(char));
+    char * num2 = (char *) malloc((MAX_LENGTH + 1) * sizeof(char));
+    
+    scanf("%s%s",num1,num2);
+    
     int *num1_transform = strToInt(num1);
     int *num2_transform = strToInt(num2);
+    //int n = comparator(num1_transform, num2_transform);
+    //printf("%d\n", n);
+
+/*     swap(&num1_transform, &num2_transform);
+    print_the_number(num1_transform);
+    print_the_number(num2_transform); */
+
+    //substractor(&num1_transform, &num2_transform);
+    //print_the_number(num1_transform);
+    //printf("%d\n", num1_transform[0]);
                     
     int *ans = (int *) malloc((MAX_LENGTH + 1) * sizeof(int));
-    
+    ans[0] = 1;
+    ans[1] = 1;
+
     int *two = (int *) malloc((MAX_LENGTH + 1) * sizeof(int));
     two[0] = 1;
     two[1] = 2;
 
     while (num1_transform[0] != 0 && num2_transform[0] != 0) {
         if ((num1_transform[1]%2 == 0) && (num2_transform[1]%2 == 0)) {
-            self_multiplier(&num1_transform, &two);
+            self_multiplier(&ans, &two);
             divisor(&num1_transform);
             divisor(&num2_transform);
         }
@@ -50,19 +69,20 @@ int main(void){
         if (comparator(num1_transform, num2_transform) == 1) {
             swap(&num1_transform, &num2_transform);
         }
-        substractor(&num1_transform, &num2_transform);
+        substractor(&num2_transform, &num1_transform);
         //printf("calculating!!\n");
     }
     self_multiplier(&num1_transform, &ans);    
     print_the_number(num1_transform);
+    
 }
 
 
 void swap(int **num1, int **num2)
 {
-    int **tmp = num1;
-    num1 = num2;
-    num2 = tmp;
+    int *tmp = *num1;
+    *num1 = *num2;
+    *num2 = tmp;
 }
 
 void substractor(int **num1, int **num2)
@@ -76,7 +96,7 @@ void substractor(int **num1, int **num2)
         if (num1[0][i] >= num2[0][i]) {
             num1[0][i] = (num1[0][i]) - (num2[0][i]);
         }
-        else {
+/*         else {
             num1[0][i] = (num1[0][i]) + 10;
             int j = i;
             while (num1[0][j+1] == 0) {
@@ -85,12 +105,27 @@ void substractor(int **num1, int **num2)
             }
             (num1[0][j+1])--;                    
             num1[0][i] = (num1[0][i])- (num2[0][i]);
+        } */
+            else {
+            num1[0][i] = (num1[0][i]) + 10;
+            int j = i;
+            while (num1[0][j+1] == 0) {
+                j++;
+                num1[0][j] = 9;
+            }
+            
+            (num1[0][j+1])--;
+            num1[0][i] = (num1[0][i])- (num2[0][i]);
         }
+
     }
-    //Check if the length of num1 is still the same.
-    while (num1[0][num1_len] == 0){
-        num1[0][0] = (num1[0][0]) - 1;
-        num1_len--;
+    //Check the length of num1.
+    
+    for (int i = 0; i < num1_len; i++) {
+        if (num1[0][num1_len - i] == 0) {
+            num1[0][0] = num1[0][0] - 1;
+        }
+        else break;
     }
 }
 
@@ -131,7 +166,10 @@ void divisor(int **num) {
         }
         else {
             num[0][i] = num[0][i] / 2;
-        }        
+        }
+    }
+    if (num[0][num_length] == 0) {
+        num[0][0] -= 1;
     }
 }
 
