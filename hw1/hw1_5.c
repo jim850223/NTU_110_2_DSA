@@ -4,25 +4,28 @@
 typedef struct member {
     int id;
     struct member *next;
+    //struct member *prev;
 }MEMBER;
 
 typedef struct {
     MEMBER *head;
     MEMBER *end;
+    //int reverse;
 }MEMBER_QUEUE;
 
 typedef struct group {
     //If you want to declare the struct you define in the struct itself, you have to declare it with struct group
     int group_num;
     struct group *next;
+    //struct group *prev;
     MEMBER_QUEUE *member_queue;
 }GROUP;
 
 typedef struct {
     GROUP *head;
     GROUP *end;    
+    //int reverse;
 }GROUP_QUEUE;
-
 
 typedef struct {
     //Close is used to record whether the toilet is closed or not
@@ -38,6 +41,7 @@ void enter(int member_id, int group_num, int bathroom_num, BATHROOM_INFO *bathro
 void print_the_bathroom_queue(int bathroom_num, BATHROOM_INFO *bathroom_in_store);
 void print_the_member_queue(GROUP *group);
 void connect_group_to_group_queue(GROUP *group_pointer, int bathroom_num, BATHROOM_INFO *bathroom_in_store);
+GROUP *find_the_second_last_group(GROUP_QUEUE *group_queue);
 
 int main(void) {    
     int bathrooms_quantity, situations, groups;
@@ -60,7 +64,11 @@ int main(void) {
     }
 
     print_the_bathroom_queue(1,bathroom_in_store);
-    print_the_bathroom_queue(2,bathroom_in_store);
+    GROUP *tmp = find_the_second_last_group(bathroom_in_store[1].group_queue);
+    printf("\n");
+    print_the_member_queue(tmp);
+
+    //print_the_bathroom_queue(2,bathroom_in_store);
 }
 
 //Initialize every element of th array
@@ -163,7 +171,46 @@ void print_the_member_queue(GROUP *group) {
         }
 }
 
-void leave() {
+void leave(int bathroom_num, BATHROOM_INFO *bathroom_in_store) {
+    
+    //Means that there is only one group left in the group_queue
+    GROUP_QUEUE *group_queue = bathroom_in_store[bathroom_num].group_queue;
+    if (group_queue->end ==group_queue->head) {
+        
+        //If there is only 1 member left
+        if (group_queue->end->member_queue->end == group_queue->end->member_queue->head) {
+                        
+        }
+        //Otherwise, there are more than 1 members left
+        else {
+            
+        }                         
+    }
+    //Otherwise, there is more than one group in the group_queue
+    else {
+        //If there is only 1 member left
+        if (1) {
+
+        }
+        //If there are more than 1 members left
+        else {
+
+        }
+    }                        
+}
+
+
+GROUP *find_the_second_last_group(GROUP_QUEUE *group_queue) {
+    GROUP *tmp = group_queue->head;
+    
+    while (tmp->next != group_queue->end) {
+        tmp = tmp->next;
+    }
+    return tmp;
+}
+
+void find_the_second_last_member(MEMBER_QUEUE *member_queue) {
+    
 }
 
 void go() {    
