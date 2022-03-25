@@ -42,6 +42,7 @@ void print_the_bathroom_queue(int bathroom_num, BATHROOM_INFO *bathroom_in_store
 void print_the_member_queue(GROUP *group);
 void connect_group_to_group_queue(GROUP *group_pointer, int bathroom_num, BATHROOM_INFO *bathroom_in_store);
 GROUP *find_the_second_last_group(GROUP_QUEUE *group_queue);
+MEMBER *find_the_second_last_member(MEMBER_QUEUE *member_queue);
 
 int main(void) {    
     int bathrooms_quantity, situations, groups;
@@ -67,6 +68,9 @@ int main(void) {
     GROUP *tmp = find_the_second_last_group(bathroom_in_store[1].group_queue);
     printf("\n");
     print_the_member_queue(tmp);
+    printf("\n");
+    MEMBER *tmp_2 = find_the_second_last_member(tmp->member_queue);
+    printf("%d", tmp_2->id);
 
     //print_the_bathroom_queue(2,bathroom_in_store);
 }
@@ -201,16 +205,19 @@ void leave(int bathroom_num, BATHROOM_INFO *bathroom_in_store) {
 
 
 GROUP *find_the_second_last_group(GROUP_QUEUE *group_queue) {
-    GROUP *tmp = group_queue->head;
-    
-    while (tmp->next != group_queue->end) {
-        tmp = tmp->next;
+    GROUP *temp = group_queue->head;
+    while (temp->next != group_queue->end) {
+        temp = temp->next;
     }
-    return tmp;
+    return temp;
 }
 
-void find_the_second_last_member(MEMBER_QUEUE *member_queue) {
-    
+MEMBER *find_the_second_last_member(MEMBER_QUEUE *member_queue) {
+    MEMBER *temp = member_queue->head;
+    while (temp->next != member_queue->end) {
+        temp = temp->next;
+    }
+    return temp;
 }
 
 void go() {    
