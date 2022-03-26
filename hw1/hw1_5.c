@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 typedef struct member {
     int id;
@@ -43,15 +44,33 @@ void print_the_member_queue(GROUP *group);
 void connect_group_to_group_queue(GROUP *group_pointer, int bathroom_num, BATHROOM_INFO *bathroom_in_store);
 GROUP *find_the_second_last_group(GROUP_QUEUE *group_queue);
 MEMBER *find_the_second_last_member(MEMBER_QUEUE *member_queue);
+void leave(int bathroom_num, BATHROOM_INFO *bathroom_in_store);
+void mission_to_do(char *mission, int group, int id, int bathroom);
 
-int main(void) {    
+int main(void) {
+
+    printf("Please enter the criteria (i.e. bathrooms, situations, group):\n");
+    int bathrooms_quantity, situations, groups;
+    scanf("%d", &bathrooms_quantity);
+    scanf("%d", &situations);
+    scanf("%d", &groups);
+    
+    char *mission = (char *)malloc(6*sizeof(char));
+    int group, id, bathroom, i = 0;
+    while (i++ < situations) {
+        printf("Please enter the instructions (i.e. mission, group, id, bathroom):\n");
+        scanf(" %s",mission);
+        mission_to_do(mission, group, id, bathroom);            
+    }
+}
+/* 
     int bathrooms_quantity, situations, groups;
     scanf("%d", &bathrooms_quantity);
     scanf("%d", &situations);
     scanf("%d", &groups);
     
     BATHROOM_INFO bathroom_in_store[bathrooms_quantity];
-    bathroom_init(bathroom_in_store, bathrooms_quantity);        
+    bathroom_init(bathroom_in_store, bathrooms_quantity);
     
     //Make group_num = 1 to enter the while loop
     int member_id, group_num = 1, bathroom_num;
@@ -63,17 +82,37 @@ int main(void) {
         scanf("%d", &bathroom_num);
         enter(member_id, group_num, bathroom_num, bathroom_in_store);
     }
+    
+    print_the_bathroom_queue(1,bathroom_in_store); */
+ 
 
-    print_the_bathroom_queue(1,bathroom_in_store);
-    GROUP *tmp = find_the_second_last_group(bathroom_in_store[1].group_queue);
-    printf("\n");
-    print_the_member_queue(tmp);
-    printf("\n");
-    MEMBER *tmp_2 = find_the_second_last_member(tmp->member_queue);
-    printf("%d", tmp_2->id);
+
+
+    
+/*     group_num = 1;
+    while (group_num != 0) {
+        scanf("%d", &bathroom_num);
+        leave(bathroom_num, bathroom_in_store);
+        scanf("%d", &group_num);
+    } */
+
+
+
+    //leave(1, bathroom_in_store);
+    //print_the_bathroom_queue(1,bathroom_in_store);
+    
+
+
+
+    //GROUP *tmp = find_the_second_last_group(bathroom_in_store[1].group_queue);
+    //printf("\n");
+    //print_the_member_queue(tmp);
+    //printf("\n");
+    //MEMBER *tmp_2 = find_the_second_last_member(tmp->member_queue);
+    //printf("%d", tmp_2->id);
 
     //print_the_bathroom_queue(2,bathroom_in_store);
-}
+
 
 //Initialize every element of th array
 void bathroom_init(BATHROOM_INFO *bathroom_in_store, int bathrooms_quantity) {
@@ -100,7 +139,6 @@ GROUP *group_init(int group_num, int member_id) {
     new_group->member_queue = new_member_queue;
     return new_group;
 }
-
 
 //Find the pointer of the group, or return NULL
 GROUP *find_group(int group_num, int bathroom_num, BATHROOM_INFO *bathroom_in_store) {
@@ -183,41 +221,78 @@ void leave(int bathroom_num, BATHROOM_INFO *bathroom_in_store) {
         
         //If there is only 1 member left
         if (group_queue->end->member_queue->end == group_queue->end->member_queue->head) {
-                        
+            //free(group_queue->head->member_queue->head);
+            //free(group_queue->head->member_queue);
+            
+            //Only need to do once since the head and the last point to the same address
+            //free(group_queue->head);
+            group_queue->head = NULL;
+            group_queue->end = NULL;                                                            
         }
+
         //Otherwise, there are more than 1 members left
         else {
-            
+            MEMBER *new_last_member = find_the_second_last_member(group_queue->head->member_queue);
+            //Free the last member of the queue
+            //free(group_queue->end->member_queue->end);            
+            new_last_member->next = NULL;
+            group_queue->end->member_queue->end = new_last_member;                                    
         }                         
     }
     //Otherwise, there is more than one group in the group_queue
     else {
         //If there is only 1 member left
-        if (1) {
-
+        if (group_queue->end->member_queue->end == group_queue->end->member_queue->head) {
+            //free(group_queue->head->member_queue->head);
+            //free(group_queue->head->member_queue);
+            GROUP *new_last_group = find_the_second_last_group(group_queue);
+            //free(group_queue->end);
+            new_last_group->next = NULL;
+            group_queue->end = new_last_group;            
         }
         //If there are more than 1 members left
         else {
-
-        }
+            MEMBER *new_last_member = find_the_second_last_member(group_queue->head->member_queue);
+            //Free the last member of the queue
+            //free(group_queue->end->member_queue->end);            
+            new_last_member->next = NULL;
+            group_queue->end->member_queue->end = new_last_member;                                    
+        } 
     }                        
+}
+
+void mission_to_do(char *mission, int group, int id, int bathroom) {        
+    if (strcmp("enter", mission) == 0) {
+        scanf("%d",&group);
+        scanf("%d",&id);
+        scanf("%d",&bathroom);
+        printf("%s, %d, %d, %d!\n",mission, group, id, bathroom);
+    }
+    else if (strcmp("leave", mission) == 0) {
+        printf("leave\n");
+    }
+    else if (strcmp("go", mission)){
+    }
+    else {
+        printf("please follow the rule bro!\n");
+    }
 }
 
 
 GROUP *find_the_second_last_group(GROUP_QUEUE *group_queue) {
-    GROUP *temp = group_queue->head;
-    while (temp->next != group_queue->end) {
-        temp = temp->next;
+    GROUP *tmp = group_queue->head;
+    while (tmp->next != group_queue->end) {
+        tmp = tmp->next;
     }
-    return temp;
+    return tmp;
 }
 
 MEMBER *find_the_second_last_member(MEMBER_QUEUE *member_queue) {
-    MEMBER *temp = member_queue->head;
-    while (temp->next != member_queue->end) {
-        temp = temp->next;
+    MEMBER *tmp = member_queue->head;
+    while (tmp->next != member_queue->end) {
+        tmp = tmp->next;
     }
-    return temp;
+    return tmp;
 }
 
 void go() {    
