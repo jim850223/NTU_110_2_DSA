@@ -39,54 +39,41 @@ GROUP *group_init(int group_num, int member_id);
 GROUP *find_group(int group_num, int bathroom_num, BATHROOM_INFO *bathroom_in_store);
 void join_group(int id, GROUP *group_pointer, int bathroom_num, BATHROOM_INFO *bathroom_in_store);
 void enter(int member_id, int group_num, int bathroom_num, BATHROOM_INFO *bathroom_in_store);
+void print_every_bathrooms(int bathrooms_quantity, BATHROOM_INFO *bathroom_in_store);
 void print_the_bathroom_queue(int bathroom_num, BATHROOM_INFO *bathroom_in_store);
 void print_the_member_queue(GROUP *group);
 void connect_group_to_group_queue(GROUP *group_pointer, int bathroom_num, BATHROOM_INFO *bathroom_in_store);
 GROUP *find_the_second_last_group(GROUP_QUEUE *group_queue);
 MEMBER *find_the_second_last_member(MEMBER_QUEUE *member_queue);
 void leave(int bathroom_num, BATHROOM_INFO *bathroom_in_store);
-void mission_to_do(char *mission, int group, int id, int bathroom);
+void mission_to_do(char *mission, int group, int id, int bathroom, BATHROOM_INFO *bathroom_in_store);
 
 int main(void) {
+
 
     printf("Please enter the criteria (i.e. bathrooms, situations, group):\n");
     int bathrooms_quantity, situations, groups;
     scanf("%d", &bathrooms_quantity);
     scanf("%d", &situations);
     scanf("%d", &groups);
-    
-    char *mission = (char *)malloc(6*sizeof(char));
-    int group, id, bathroom, i = 0;
-    while (i++ < situations) {
-        printf("Please enter the instructions (i.e. mission, group, id, bathroom):\n");
-        scanf(" %s",mission);
-        mission_to_do(mission, group, id, bathroom);            
-    }
-}
-/* 
-    int bathrooms_quantity, situations, groups;
-    scanf("%d", &bathrooms_quantity);
-    scanf("%d", &situations);
-    scanf("%d", &groups);
-    
+
     BATHROOM_INFO bathroom_in_store[bathrooms_quantity];
     bathroom_init(bathroom_in_store, bathrooms_quantity);
     
-    //Make group_num = 1 to enter the while loop
-    int member_id, group_num = 1, bathroom_num;
-    
-    //Ask for the member info
-    while (group_num != 0) {
-        scanf("%d", &member_id);    
-        scanf("%d", &group_num);
-        scanf("%d", &bathroom_num);
-        enter(member_id, group_num, bathroom_num, bathroom_in_store);
+    char *mission = (char *)malloc(6*sizeof(char));
+    int group, member_id, bathroom, i = 0;
+    while (i++ < situations) {
+        printf("Please enter the instructions (i.e. mission, group, id, bathroom):\n");
+        scanf(" %s",mission);    
+        mission_to_do(mission, group, member_id, bathroom, bathroom_in_store);        
+
     }
     
+    print_every_bathrooms(bathrooms_quantity, bathroom_in_store);
+}
+/* 
+    
     print_the_bathroom_queue(1,bathroom_in_store); */
- 
-
-
 
     
 /*     group_num = 1;
@@ -117,6 +104,7 @@ int main(void) {
 //Initialize every element of th array
 void bathroom_init(BATHROOM_INFO *bathroom_in_store, int bathrooms_quantity) {
     for (int i = 0; i < bathrooms_quantity; i++) {
+        //It can be simplified with only one variable declared
         GROUP_QUEUE *group_queue = (GROUP_QUEUE *) malloc(sizeof(GROUP_QUEUE));
         group_queue->head = NULL;
         group_queue->end = NULL;
@@ -137,6 +125,7 @@ GROUP *group_init(int group_num, int member_id) {
     GROUP *new_group = (GROUP *) malloc(sizeof(GROUP));
     new_group->group_num = group_num;
     new_group->member_queue = new_member_queue;
+    new_group->next = NULL;    
     return new_group;
 }
 
@@ -196,6 +185,12 @@ void connect_group_to_group_queue(GROUP *group_pointer, int bathroom_num, BATHRO
     bathroom_in_store[bathroom_num].group_queue->end = group_pointer;
 }
 
+void print_every_bathrooms(int bathrooms_quantity, BATHROOM_INFO *bathroom_in_store) {
+    for (int i = 0; i < bathrooms_quantity; i++) {
+        print_the_bathroom_queue(i, bathroom_in_store);
+    }
+}
+
 void print_the_bathroom_queue(int bathroom_num, BATHROOM_INFO *bathroom_in_store) {
     GROUP *tmp = bathroom_in_store[bathroom_num].group_queue->head;
     while(tmp != NULL) {
@@ -215,17 +210,23 @@ void print_the_member_queue(GROUP *group) {
 
 void leave(int bathroom_num, BATHROOM_INFO *bathroom_in_store) {
     
-    //Means that there is only one group left in the group_queue
     GROUP_QUEUE *group_queue = bathroom_in_store[bathroom_num].group_queue;
-    if (group_queue->end ==group_queue->head) {
+    //Means that there is only one group left in the group_queue
+    if (group_queue->end == group_queue->head) {
         
         //If there is only 1 member left
         if (group_queue->end->member_queue->end == group_queue->end->member_queue->head) {
             //free(group_queue->head->member_queue->head);
             //free(group_queue->head->member_queue);
-            
+            group_queue->end->member_queue->end = NULL;
+            group_queue->end->member_queue->head = NULL; 
+
+
             //Only need to do once since the head and the last point to the same address
             //free(group_queue->head);
+
+            group_queue->end->member_queue = NULL;
+            
             group_queue->head = NULL;
             group_queue->end = NULL;                                                            
         }
@@ -252,7 +253,7 @@ void leave(int bathroom_num, BATHROOM_INFO *bathroom_in_store) {
         }
         //If there are more than 1 members left
         else {
-            MEMBER *new_last_member = find_the_second_last_member(group_queue->head->member_queue);
+            MEMBER *new_last_member = find_the_second_last_member(group_queue->end->member_queue);
             //Free the last member of the queue
             //free(group_queue->end->member_queue->end);            
             new_last_member->next = NULL;
@@ -261,17 +262,23 @@ void leave(int bathroom_num, BATHROOM_INFO *bathroom_in_store) {
     }                        
 }
 
-void mission_to_do(char *mission, int group, int id, int bathroom) {        
+void mission_to_do(char *mission, int group, int member_id, int bathroom, BATHROOM_INFO *bathroom_in_store) {        
     if (strcmp("enter", mission) == 0) {
+        scanf("%d",&member_id);
         scanf("%d",&group);
-        scanf("%d",&id);
         scanf("%d",&bathroom);
-        printf("%s, %d, %d, %d!\n",mission, group, id, bathroom);
+        enter(member_id, group, bathroom, bathroom_in_store);
+
+        print_the_bathroom_queue(bathroom, bathroom_in_store);
+        //printf("%s, %d, %d, %d!\n",mission, group, id, bathroom);
     }
     else if (strcmp("leave", mission) == 0) {
-        printf("leave\n");
+        scanf("%d",&bathroom);
+        leave(bathroom, bathroom_in_store);
+        //printf("leave\n");
+        print_the_bathroom_queue(bathroom, bathroom_in_store);
     }
-    else if (strcmp("go", mission)){
+    else if (strcmp("go", mission) == 0){
     }
     else {
         printf("please follow the rule bro!\n");

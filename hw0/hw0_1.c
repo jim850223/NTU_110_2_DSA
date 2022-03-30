@@ -275,7 +275,6 @@ char *get_num_in_str(void) {
     
     char * str_num = (char *) malloc((MAX_LENGTH + 1) * sizeof(char));
 
-
     printf("Please type in number \n");
     scanf("%s", str_num);
     return str_num;
