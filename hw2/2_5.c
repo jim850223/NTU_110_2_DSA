@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include "price.h"
 
+//Index of root = 1
+
 //To record the stock of the k point
 typedef struct {
     long long unsigned value;
@@ -13,6 +15,10 @@ unsigned long long *get_output (int Q, int s1);
 int *create_Brians_favorites(int A);
 K_POINT *make_Brians_favorites_to_a_min_heap (int *bStocks, int A, int N);
 void get_prices_store_into_the_array(int *bStocks, K_POINT *min_heap, int A, int N);
+void heapify(K_POINT *group_of_nodes, int index, int range);
+void build_the_heap (K_POINT *group_of_nodes, int range);
+K_POINT *heap_sort(K_POINT *heap, int range);
+
 
 int main(void) {
 
@@ -31,14 +37,52 @@ int main(void) {
 
     //Declare an 10^6 array to store the result of the heap sort with a given heap and add new elements into the array at the same time
     
-    
-        
-    //Testing section for get_prices
+            
+    //Testing section for heap_sort
     K_POINT *min_heap = (K_POINT *)malloc(A * N * sizeof(K_POINT));
     get_prices_store_into_the_array(bStocks, min_heap, A, N);
     print_elements(min_heap, A * N);
+    printf("\n\n");
+    build_the_heap (min_heap, A * N);
+    print_elements(min_heap, A * N);
+    printf("\n\n");
+    K_POINT *result = heap_sort(min_heap, A * N);
+    print_elements(result, A * N);
+
     
+
     
+    //Testing section for heapifu
+/*     K_POINT *min_heap = (K_POINT *)malloc(8* sizeof(K_POINT));
+    K_POINT a1;
+    a1.value = 4;
+    K_POINT a2;
+    a2.value = 2;
+    K_POINT a3;
+    a3.value = 7;
+    K_POINT a4;
+    a4.value = 1;
+    K_POINT a5;
+    a5.value = 6;
+    K_POINT a6;
+    a6.value = 3;
+    K_POINT a7;
+    a7.value = 5;
+    min_heap[1] = a1;
+    min_heap[2] = a2;
+    min_heap[3] = a3;
+    min_heap[4] = a4;
+    min_heap[5] = a5;
+    min_heap[6] = a6;
+    min_heap[7] = a7;   
+    print_elements(min_heap, 7);
+    build_the_heap (min_heap, 7);
+    //heapify(min_heap, 3, 7);
+    //heapify(min_heap, 2, 7);
+    //heapify(min_heap, 1, 7);
+    printf("\n\n");
+    print_elements(min_heap, 7); */
+
 }
 
 
@@ -62,9 +106,9 @@ unsigned long long *get_output (int Q, int s1){
 //Print elements of an unsigned long long array
 //Checked
 void print_elements(K_POINT *output, int Q) {
-    for (int i = 0; i < Q; i++) {
-        printf("%llu\n", output[i].value);
-        printf("%d\n", output[i].stock);
+    for (int i = 1; i <= Q; i++) {
+        printf("%llu\n", output[i].value);        
+        //printf("%d\n", output[i].stock);
     }
 }
 
@@ -99,7 +143,7 @@ int *create_Brians_favorites(int A) {
 //Checked
 void get_prices_store_into_the_array(int *bStocks, K_POINT *min_heap, int A, int N) {
     //To record the index of the array
-    int count = 0;
+    int count = 1;
     //To determine which stock to choose
     for (int i = 0; i < A; i++) {
         //To determin which day to choose from 1
@@ -112,11 +156,38 @@ void get_prices_store_into_the_array(int *bStocks, K_POINT *min_heap, int A, int
     }
 }
 
-/* 
-void heapify() {
-    
-} */
+void heapify(K_POINT *group_of_nodes, int index, int range) {
+    int small = 2 * index;
+    if (small <= range) {
+        if (small + 1 <= range) {
+            if (group_of_nodes[small].value >= group_of_nodes[small+1].value) {
+                small = small + 1;
+        }
+        if (group_of_nodes[small].value < group_of_nodes[index].value) {
+            unsigned long long tmp = group_of_nodes[small].value;
+            group_of_nodes[small].value = group_of_nodes[index].value;
+            group_of_nodes[index].value = tmp;
+            heapify(group_of_nodes, small, range);
+        }
+    }
+    }
+}
 
+void build_the_heap (K_POINT *group_of_nodes, int range) {
+    for (int i = range/2; i > 0; i-- ) {
+        heapify(group_of_nodes, i, range);
+    }
+}
+
+K_POINT *heap_sort(K_POINT *heap, int range) {
+    K_POINT *sortted_array = (K_POINT *)malloc(range * (sizeof(int)) + 1);
+    for (int i = 1; i <= range; i++) {
+        sortted_array[i].value = heap[1].value;
+        heap[1].value = heap[range+1-i].value;
+        heapify(heap, 1, range+1-i);
+    }
+    return sortted_array;
+}
 
 /* void heapify_elements_of_array(unsigned long long *min_heap, int arrayLength){
     //heapify the elements from the last parent node
