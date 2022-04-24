@@ -7,6 +7,12 @@ unsigned long long *create_Brians_favorites(int A);
 unsigned long long *make_Brians_favorites_to_a_min_heap (unsigned long long *bStocks, int A, int N);
 void get_prices_store_into_the_array(unsigned long long *bStocks, unsigned long long *min_heap, int A, int N);
 
+//To record the stock of the k point
+typedef struct {
+    long long unsigned value;
+    int stock;
+}K_POINT;
+
 int main(void) {
 
     int A, Q, N;
