@@ -1,17 +1,18 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "price.h"
-void print_elements(unsigned long long *output, int Q);
-unsigned long long *get_output (int Q, int s1);
-unsigned long long *create_Brians_favorites(int A);
-unsigned long long *make_Brians_favorites_to_a_min_heap (unsigned long long *bStocks, int A, int N);
-void get_prices_store_into_the_array(unsigned long long *bStocks, unsigned long long *min_heap, int A, int N);
 
 //To record the stock of the k point
 typedef struct {
     long long unsigned value;
     int stock;
 }K_POINT;
+
+void print_elements(K_POINT *output, int Q);
+unsigned long long *get_output (int Q, int s1);
+int *create_Brians_favorites(int A);
+K_POINT *make_Brians_favorites_to_a_min_heap (int *bStocks, int A, int N);
+void get_prices_store_into_the_array(int *bStocks, K_POINT *min_heap, int A, int N);
 
 int main(void) {
 
@@ -22,7 +23,7 @@ int main(void) {
     scanf("%d", &N); //N defines how long each stock is guranted to increase its price, as mentioned above
     
     //Create an array to store Brian's favorite stocks
-    unsigned long long * bStocks = create_Brians_favorites(A);
+    int * bStocks = create_Brians_favorites(A);
 
     
     //Build a min heap which is comprised of A * n nodes from Brian's A favorites stocks
@@ -33,9 +34,9 @@ int main(void) {
     
         
     //Testing section for get_prices
-    /* unsigned long long *min_heap = (unsigned long long *)malloc(A * N * sizeof(unsigned long long));
+    K_POINT *min_heap = (K_POINT *)malloc(A * N * sizeof(K_POINT));
     get_prices_store_into_the_array(bStocks, min_heap, A, N);
-    print_elements(min_heap, A * N); */
+    print_elements(min_heap, A * N);
     
     
 }
@@ -52,50 +53,51 @@ unsigned long long *get_output (int Q, int s1){
         scanf("%d", &extre_stock);
         scanf("%d", &sweet_point);
 
-        output[i] = price(s1, sweet_point);        
+        output[i] = price(s1, sweet_point);
     }
 
     return output;
 }
 
-//Print elements of an array
+//Print elements of an unsigned long long array
 //Checked
-void print_elements(unsigned long long *output, int Q) {
+void print_elements(K_POINT *output, int Q) {
     for (int i = 0; i < Q; i++) {
-        printf("%llu\n", output[i]);
+        printf("%llu\n", output[i].value);
+        printf("%d\n", output[i].stock);
     }
 }
 
 
 //Create an array to store Brian's favorite stocks
 //Checked
-unsigned long long *create_Brians_favorites(int A) {
-        unsigned long long As;//To store Brian's favorite stocks
+int *create_Brians_favorites(int A) {
+        int As;//To store Brian's favorite stocks
     
-        unsigned long long *bStocks = (unsigned long long *)malloc(A * sizeof(unsigned long long));        
+        int *bStocks = (int *)malloc(A * sizeof(int));        
         for (int i = 0; i < A; i++) {
-            scanf("%llu", &As);        
+            scanf("%d", &As);        
             bStocks[i] = As;
     }
     return bStocks;
 }
 
 //Build a min heap which is comprised of A * n nodes from Brian's A favorites stocks
-unsigned long long *make_Brians_favorites_to_a_min_heap (unsigned long long *bStocks, int A, int N) {
+/* K_POINT *make_Brians_favorites_to_a_min_heap (int *bStocks, int A, int N) {
     
     //declare an array with malloc to store prices of the stocks
-    unsigned long long *min_heap = (unsigned long long *)malloc(A * N * sizeof(unsigned long long));
+    K_POINT *min_heap = (K_POINT *)malloc(A * N * sizeof(K_POINT));
     //Get n prices from stocks and store them into an array
-    get_prices_store_into_the_array(bStocks, min_heap A, N);
+    get_prices_store_into_the_array(bStocks, min_heap, A, N);
     
     //Sort the given array such that prices are monotonic
     //void sorts_prices()
     
     return heap
 }
-
+ */
 //Checked
-void get_prices_store_into_the_array(unsigned long long *bStocks, unsigned long long *min_heap, int A, int N) {
+void get_prices_store_into_the_array(int *bStocks, K_POINT *min_heap, int A, int N) {
     //To record the index of the array
     int count = 0;
     //To determine which stock to choose
@@ -103,23 +105,24 @@ void get_prices_store_into_the_array(unsigned long long *bStocks, unsigned long 
         //To determin which day to choose from 1
         for (int j = 1; j <= N; j++) {
             //Store the prices into the heap
-            min_heap[count] = price(bStocks[i], j);
-            count++;            
+            min_heap[count].value = price(bStocks[i], j);
+            min_heap[count].stock = bStocks[i];
+            count++;
         }
     }
 }
 
-
+/* 
 void heapify() {
     
-}
+} */
 
 
-void heapify_elements_of_array(unsigned long long *min_heap, int arrayLength){
+/* void heapify_elements_of_array(unsigned long long *min_heap, int arrayLength){
     //heapify the elements from the last parent node
     
-}
+} */
 
-void heap_sort {
+/* void heap_sort {
     
-}
+} */
