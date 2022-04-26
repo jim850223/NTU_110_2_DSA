@@ -37,6 +37,7 @@ int isFull(struct Stack* stack);
 int isEmpty(struct Stack* stack);
 void push(struct Stack* stack, int item);
 int pop(struct Stack* stack);
+int dfs_capital_version(int prev_value, NODE *entry_point, GRAPH *graph, STACK *stack,int capital, int on_the_main_road);
  
 // Driver program to test above functions
 int main()
@@ -51,9 +52,42 @@ int main()
     scanf("%d", &R); // Resort City
     
     struct Graph* graph = createGraph(N+1);
-    STACK * stack = createStack(N+1);
     adj_list_init(N, graph);
     printGraph(graph);
+    STACK *stack = createStack(N+1);
+    NODE *tmp = graph->array[R].head;
+    push(stack, R);
+    while (tmp != NULL)  {
+            push(stack, tmp->index);
+            if (tmp->index == S) {
+                //printf("aa\n");                            
+                break;
+            }
+            else {        
+                int result = dfs_capital_version(R, tmp, graph, stack, S, 0);
+                if (result == 1){
+                    break;
+                }
+                //printf("count%d\n", count);                            
+                tmp = tmp->next;
+                pop(stack);
+            }
+        }
+
+    while (isEmpty(stack) != 1) {
+        //printf("hello??\n");
+        printf("%d\n", pop(stack));
+        }
+    //printf("%d\n", graph->array[1].head->index);
+    //printf("%d\n", graph->array[1].head->next->index);
+    //printf("%d\n", graph->array[1].head->next->next->index);
+    
+/*     while (isEmpty(stack) != 0) {
+        printf("%d\n", pop(stack));
+    } */
+
+    
+
     
 
 }
@@ -197,3 +231,101 @@ int pop(struct Stack* stack)
         return INT_MIN;
     return stack->array[stack->top--];
 }
+
+int dfs_capital_version(int prev_value, NODE *entry_point, GRAPH *graph, STACK *stack,int capital, int on_the_main_road) {
+    //Use NODE * instead of int to set prev to prevent segmentation fault
+    
+    int present_v = entry_point->index;
+    //NODE *adj_value = graph->array[tmp->index].head;
+    NODE *adj_value = graph->array[entry_point->index].head;
+    
+    while (adj_value != NULL)  {
+        
+
+        if (adj_value->index != capital && adj_value->index != prev_value) {
+            //printf("cc\n");
+            push(stack, adj_value->index);
+            //printf("check\n");
+            //printf("%d\n", adj_value->index);
+            //printf("%d\n", prev_value);            
+            int result = dfs_capital_version(entry_point->index, adj_value, graph, stack, capital, 0);
+            if (result == 1) {
+                return 1;
+            }
+            //printf("finish\n");
+            pop(stack);
+            
+            adj_value = adj_value->next;
+        }
+        else if (adj_value->index == capital) {
+            //printf("aa\n");
+            push(stack, adj_value->index);
+            return 1;
+        }        
+        
+        else if (adj_value->index == prev_value) {            
+            //printf("bb\n");
+            //printf("%d\n", adj_value->index);
+            //printf("%d\n", prev_value);            
+            adj_value = adj_value->next;                        
+        }
+    
+    }
+    return 0;
+}
+/* 
+7 4 6 2
+1 5 5 6 1 2 2 4 2 7 7 3
+  */
+
+/* //Backup
+int dfs_capital_version(int value, NODE *entry_point, GRAPH *graph, STACK *stack,int capital, int on_the_main_road) {
+    //Use NODE * instead of int to set prev to prevent segmentation fault
+    
+    NODE *tmp = entry_point;
+    int adj_value = graph->array[tmp->index].head->index;
+    int prev_tmp = value;
+    while (tmp != NULL)  {
+        
+         if (prev == NULL && tmp->index != capital) {
+            push(stack, tmp->index);
+            dfs_capital_version(tmp, graph, stack, capital, prev_tmp, 0);
+            pop(stack);
+            prev_tmp = tmp;
+            tmp = tmp->next;
+        }
+        else if (prev == NULL && tmp->index == capital) {
+            push(stack, tmp->index);
+            return 1;            
+        } 
+        
+
+        if (tmp->index != capital && graph->array[tmp->index].head->index != prev_tmp) {
+            printf("cc\n");
+            push(stack, tmp->index);
+            printf("%d\n", tmp->index);
+            printf("%d\n", prev_tmp);
+            printf("%d\n",graph->array[tmp->index].head->index );
+            dfs_capital_version(tmp->index, graph->array[tmp->index].head, graph, stack, capital, 0);
+            pop(stack);
+            
+            tmp = tmp->next;
+        }
+        else if (graph->array[tmp->index].head->index == prev_tmp) {            
+            printf("bb\n");
+            printf("%d\n", tmp->index);
+            printf("%d\n", prev_tmp);
+            printf("%d\n",graph->array[tmp->index].head->index );
+            tmp = tmp->next;  
+            printf("%d???\n", tmp->index);
+            
+        }
+        
+        else if (tmp->index == capital) {
+            printf("aa\n");
+            push(stack, tmp->index);
+            return 1;
+        }        
+    }
+    return 0;
+} */
