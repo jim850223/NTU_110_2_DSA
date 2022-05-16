@@ -9,7 +9,6 @@
 #include <math.h> 
 
 //flag = 0 output either of multiple pairs, (i, j), where the i-th magic is similar to j-th 
-
 //flag = 1 print out one integer, indicaating the number of similar pairs
 //Having got to deal with the situations where many pairs show up
 
@@ -18,61 +17,54 @@ typedef struct node {
     unsigned long long index;
 } NODE;
 
-unsigned long long power_with_mod(unsigned long long number, unsigned long long times, unsigned long long max_number) {    
+unsigned long long power_with_mod(unsigned long long number, unsigned long long times, unsigned long long q) {    
     unsigned long long result = 1;
     
     for (unsigned long long i = 0; i < times; i++) {        
-        result = (result * number) % max_number;    
+        result = (result * number) % q;    
     }    
     return result;
 }
 
 
-void Rabin_Karp(char *target_string, unsigned long long string_num, unsigned long long l, unsigned long long max_number, NODE *value_table, unsigned long long *RK_table) {                  
-    
+void Rabin_Karp(char *target_string, unsigned long long string_num, unsigned long long l, unsigned long long q, NODE *value_table, unsigned long long *RK_table) {                  
     
     //P is used to save the real KP_value    
-    unsigned long long p = 0;
-    unsigned long long temp;
+    unsigned long long p, temp = 0;
     
     //Calculate RK_value
     for (unsigned long long j = 0; j < l; j++) {                
-        p = (CHARACTER_SET * p + target_string[j]) % max_number;                                
+        p = (CHARACTER_SET * p + (target_string[j]-'!' + 1)) % q;                                
     }   
     value_table[string_num].index = string_num;
     value_table[string_num].value = p;
 
-    printf("%llu\n", value_table[string_num].value);
+    //printf("%llu\n", value_table[string_num].value);
     
     //Calculate RK_value with the present value hidden
     for (unsigned long long j = 0; j < l; j++) {        
         //Copy value from p to temp to calculate RK_value with the present value hidden
         temp = p;
         temp = 
-            temp - target_string[l - 1 - j] * power_with_mod(CHARACTER_SET, j, max_number);
-        //Store the value into the Rk_table
-        RK_table[0 * l + j] = temp;
-        printf("%llu\n", temp);
+            temp - (target_string[l - 1 - j]- '!' + 1) * power_with_mod(CHARACTER_SET, j, q);
+        //Store the value to the Rk_table
+        RK_table[string_num * l + j] = temp;
+        //printf("%llu\n", temp);
     }
-/* 
-    for (unsigned long long i = 0; i < l; i++) {
-        printf("%llu\n", RK_table[0 * l + i]);        
-    } */
 }
 
-void get_table(unsigned long long k, unsigned long long l, unsigned long long flag, unsigned long long max_number, NODE *value_table, unsigned long long *RK_table) {
+void fill_tables(unsigned long long k, unsigned long long l, unsigned long long flag, unsigned long long q, NODE *value_table, unsigned long long *RK_table) {
          
     char *the_string = (char *)malloc(l * sizeof(char));
-        
+    
+    //i stands for number the string
     for (unsigned i = 0; i < k; i++) {
         scanf("%s", the_string);
-        Rabin_Karp(the_string, i, l, max_number, value_table, RK_table);
-        printf("The value is %llu\n",value_table[i].value);
-        printf("from %llu\n",value_table[i].index);
+        Rabin_Karp(the_string, i, l, q, value_table, RK_table);
+        //printf("The value is %llu\n",value_table[i].value);
+        //printf("from %llu\n",value_table[i].index);
     }    
     
-
-
 
 //Figure how to use getchar() it after finish the question
 /*     while((ch = getchar_unlocked()) != '\n') {           
@@ -100,19 +92,25 @@ void get_table(unsigned long long k, unsigned long long l, unsigned long long fl
         }
 
     } */
-    
+
+}
+
+int comparator(NODE *p, NODE *q) 
+{
+    int l = p->value;
+    int r = q->value;
+    return (l - r);
 }
 
 
 int main (void) {
-    
-    
-    unsigned long long bigValue = ((unsigned long long)2 <<62);
-    bigValue = bigValue + bigValue - 1;    
-    
-    //Calculate value of q, which is the max number used in Rabin Karp
-    unsigned long long max_number = (bigValue/CHARACTER_SET);        
 
+/*     for (int i = 0;i < 5; i++) {
+        printf("%lld\n",power_with_mod(2, i, 10000000000));
+    } */
+
+    //Calculate value of q, which is the max number used in Rabin Karp
+    unsigned long long q = ((unsigned long long)-1/CHARACTER_SET);    
     
     //Set  k, l, flag
     unsigned long long k, l, flag;
@@ -127,10 +125,34 @@ int main (void) {
     unsigned long long *RK_table = 
         (unsigned long long*)malloc(k * l * sizeof(unsigned long long));
 
-    //Get table that stores RK_value in every step
-    get_table(k, l, flag, max_number, value_table, RK_table);
+    //Fill value_table and Rk_table with getting k set of string
+    fill_tables(k, l, flag, q, value_table, RK_table);
+
+
+    //Check result of q_sort
+/*     for (int i = 0; i < k; i ++) {
+        printf("%d\n", value_table[i].index);
+        printf("%d\n", value_table[i].value);
+    }
+
+    qsort(value_table, k, sizeof(NODE), comparator);
+    printf("\n");
         
+    for (int i = 0; i < k; i ++) {
+        printf("%d\n", value_table[i].index);
+        printf("%d\n", value_table[i].value);
+    } */
+
     
+/*     for (int i = 0; i < k; i ++) {
+        printf("%d\n", value_table[i].index);
+        printf("%d\n", value_table[i].value);
+    }
+    printf("\n");
     
-        
+    for (int i = 0; i < k; i ++) {
+        for (int j = 0; j < l; j ++) {
+            printf("%d\n", RK_table[i * l + j]);            
+        }
+    }  */              
 }
