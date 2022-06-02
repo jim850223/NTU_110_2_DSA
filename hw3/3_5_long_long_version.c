@@ -13,64 +13,87 @@
 //Having got to deal with the situations where many pairs show up
 
 typedef struct node {
-    unsigned long long value;
-    unsigned long long index;
+    long long value;
+    long long index;
 } NODE;
 
-unsigned long long power_with_mod(unsigned long long number, unsigned long long times, unsigned long long q) {    
-    unsigned long long result = 1;
+/* long long power_with_mod(long long number, long long times, long long q) {    
+    long long result = 1;
     
-    for (unsigned long long i = 0; i < times; i++) {        
+    for (long long i = 0; i < times; i++) {        
         result = (result * number) % q;    
     }    
     return result;
-}
+} */
 
 
-void Rabin_Karp(char *target_string, unsigned long long string_num, unsigned long long l, unsigned long long q, NODE *value_table, unsigned long long *RK_table) {                  
+void Rabin_Karp(char *target_string, long long string_num, long long l, long long q, NODE *value_table, long long *RK_table) {                  
     
     //P is used to save the real KP_value    
-    unsigned long long p, temp = 0;
+    long long p = 0;
+    long long temp = 0;
     
     //Calculate RK_value
-    for (unsigned long long j = 0; j < l; j++) {                
-        p = (CHARACTER_SET * p + (target_string[j]-'!' + 1)) % q;                                
-    }   
+    for (long long j = 0; j < l; j++) {                
+        p = ((CHARACTER_SET * p)%q + (target_string[j]-'!' + 1)) % q;                                
+    }
+
     value_table[string_num].index = string_num;
     value_table[string_num].value = p;
 
-    //printf("Final value is %llu\n", value_table[string_num].value);
+    //printf("Final value is %lld\n", value_table[string_num].value);
     
+
+    long long to_subtract;
+    long long to_power = 1;
     //Calculate RK_value with the present value hidden
-    for (unsigned long long j = 0; j < l; j++) {        
-        //Copy value from p to temp to calculate RK_value with the present value hidden
-        temp = p;
-        temp = 
-            temp - (target_string[l - 1 - j]- '!' + 1) * power_with_mod(CHARACTER_SET, j, q);
+    for (long long j = 0; j < l; j++) {        
+                
+        //Actually it's not necessary to use power_with_mod since it's super time-consuming
+        //to_subtract =(target_string[l - 1 - j]- '!' + 1) * power_with_mod(CHARACTER_SET, j, q);
+        to_subtract =((target_string[l - 1 - j]- '!' + 1) * to_power)%q;                
+        if (p >= to_subtract) {
+            RK_table[string_num * l + j] = p - to_subtract;
+        }
+        else {
+            RK_table[string_num * l + j] = p + q - to_subtract;
+        }                
+        //printf("RK_value is %lld\n", temp);
+        to_power = to_power * CHARACTER_SET % q;
+    }
+
+//Back up of above
+/*         to_subtract =(target_string[l - 1 - j]- '!' + 1) * to_power;                
+        if (temp > to_subtract) {
+            temp = temp - to_subtract;
+        }
+        else {
+            temp = temp + q - to_subtract;
+        }
         //Store the value to the Rk_table
         RK_table[string_num * l + j] = temp;
-        //printf("RK_value is %llu\n", temp);
-    }
+        //printf("RK_value is %lld\n", temp);
+        to_power = to_power * CHARACTER_SET % q; */
 }
 
-void fill_tables(unsigned long long k, unsigned long long l, unsigned long long flag, unsigned long long q, NODE *value_table, unsigned long long *RK_table) {
+void fill_tables(long long k, long long l, long long flag, long long q, NODE *value_table, long long *RK_table) {
          
-    char *the_string = (char *)malloc(l * sizeof(char));
+    char *the_string = (char *)malloc((l+1) * sizeof(char));
     
     //i stands for number the string
-    for (unsigned long long i = 0; i < k; i++) {
+    for (long long i = 0; i < k; i++) {
         scanf("%s", the_string);
         
 /*         char ch;
-        unsigned long long i = 0;
+        long long i = 0;
         while((ch = getchar_unlocked()) != '\n') {    
             the_string[i] = ch;
             i++;
         } */
 
         Rabin_Karp(the_string, i, l, q, value_table, RK_table);
-        //printf("The value is %llu\n",value_table[i].value);
-        //printf("from %llu\n",value_table[i].index);
+        //printf("The value is %lld\n",value_table[i].value);
+        //printf("from %lld\n",value_table[i].index);
     }    
     
 
@@ -84,7 +107,7 @@ void fill_tables(unsigned long long k, unsigned long long l, unsigned long long 
     } */
 
 //Print the content of the string
-/*     for (unsigned long long j = 0; j < l; j++) {        
+/*     for (long long j = 0; j < l; j++) {        
         //printf("%c\n", the_string[j]);
         putchar_unlocked(the_string[j]);
     }
@@ -94,8 +117,8 @@ void fill_tables(unsigned long long k, unsigned long long l, unsigned long long 
 /*     //Get string content    
     calculate_RK_value();
     
-    for (unsigned long long i = 0; i < k; i++) {        
-        for (unsigned long long j = 0; j < l; j++) {
+    for (long long i = 0; i < k; i++) {        
+        for (long long j = 0; j < l; j++) {
             
         }
 
@@ -103,11 +126,17 @@ void fill_tables(unsigned long long k, unsigned long long l, unsigned long long 
 
 }
 
-unsigned long long comparator(NODE *p, NODE *q) 
+int comparator(const void *p, const void *q) 
 {
-    unsigned long long l = p->value;
-    unsigned long long r = q->value;
-    return (l - r);
+    long long l = ((NODE *)p)->value;
+    long long r = ((NODE *)q)->value;
+    if (l > r) {
+        return 1;
+    }
+    
+    else {
+        return -1;
+    }            
 }
 
 
@@ -116,33 +145,38 @@ int main (void) {
 /*     for (int i = 0;i < 5; i++) {
         printf("%lld\n",power_with_mod(2, i, 10000000000));
     } */
+    long long max = (long long)2 << 61;
+    max = max + max -1;
 
     //Calculate value of q, which is the max number used in Rabin Karp
-    unsigned long long q = ((unsigned long long)-1/CHARACTER_SET);    
+    long long q = max/CHARACTER_SET;
+    //printf("%lld\n", max); 
+    //printf("%lld\n", q);
+
     
     //Set  k, l, flag
-    unsigned long long k, l, flag;
-    scanf("%llu", &k);
-    scanf("%llu", &l);
-    scanf("%llu", &flag);
+    long long k, l, flag;
+    scanf("%lld", &k);
+    scanf("%lld", &l);
+    scanf("%lld", &flag);
 
     //value_table is used to store final RK_value and it's index
     NODE *value_table = (NODE *)malloc(sizeof(NODE) * k);
 
     //Init a table to store RK_values
-    unsigned long long *RK_table = 
-        (unsigned long long*)malloc(k * l * sizeof(unsigned long long));
+    long long *RK_table = 
+        (long long*)malloc(k * l * sizeof(long long));
 
     //Fill value_table and Rk_table with getting k set of string
     fill_tables(k, l, flag, q, value_table, RK_table);
     //printf("\n");
 
     qsort(value_table, k, sizeof(NODE), comparator);
-    unsigned long long i = 0;
+    long long i = 0;
     while (i < k-1) {
         if (value_table[i].value== value_table[i+1].value) {
             printf("Yes\n");
-            printf("%llu %llu\n", value_table[i].index, value_table[i+1].index);
+            printf("%lld %lld\n", value_table[i].index, value_table[i+1].index);
             return 1;
             //return 1
         }
@@ -152,30 +186,27 @@ int main (void) {
     }
 
     //Refresh the value_table
-    
-    for (unsigned long long i = 0; i < l; i++) {
-        for (unsigned long long j = 0; j < k; j++) {
+    for (long long i = 0; i < l; i++) {
+        for (long long j = 0; j < k; j++) {
             value_table[j].value = RK_table[j * l + i];
             value_table[j].index = j;
         }
 
         qsort(value_table, k, sizeof(NODE), comparator);
-
-        unsigned long long i = 0;
         
-        while (i < k-1) {
-            if (value_table[i].value== value_table[i+1].value) {
+        long long z = 0;    
+        while (z < k-1) {
+            if (value_table[z].value== value_table[z+1].value) {
                 printf("Yes\n");
-                printf("%llu %llu\n", value_table[i].index, value_table[i+1].index);
+                printf("%lld %lld\n", value_table[z].index, value_table[z+1].index);
                 return 1;
                 //return 1
             }
             else {
-                i++;
+                z++;
             }
-        }        
+        }
     }
-    
     printf("No\n");            
 
     //Check result of q_sort
@@ -198,10 +229,10 @@ int main (void) {
         printf("%d\n", value_table[i].value);
     }
     printf("\n");
-    
+
     for (int i = 0; i < k; i ++) {
         for (int j = 0; j < l; j ++) {
-            printf("%d\n", RK_table[i * l + j]);            
+            printf("%d\n", RK_table[i * l + j]);
         }
-    }  */              
+    }  */
 }
